@@ -10,7 +10,7 @@ router.put('/users/:id', auth.authenticateToken, controller.update); 'S'
 
 router.delete('/users/:id', auth.authenticateToken, controller.delete); 'S'
 
-router.post('/users', auth.authenticateToken, controller.create); 'S'
+router.post('/users', controller.create); 'S'
 
 router.get('/users', controller.listAll); 'S'
 
