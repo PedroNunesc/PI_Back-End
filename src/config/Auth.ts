@@ -1,24 +1,25 @@
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload, Secret } from 'jsonwebtoken';
+import * as dotenv from "dotenv";
 
-export function generateToken(payload: any) {
-    if (!process.env.JWT_SECRET) {
-        throw new Error("JWT_SECRET not configured in .env");
-    }
+dotenv.config();
 
-    return jwt.sign(payload, process.env.JWT_SECRET, {
-        expiresIn: "7d", 
-    });
+const { JWT_SECRET } = process.env;
+
+if (!JWT_SECRET) {
+    throw new Error("JWT_SECRET is not defined in .env file");
 }
 
-export function verifyToken(token: string) {
-    if (!process.env.JWT_SECRET) {
-        throw new Error("JWT_SECRET not configured in .env");
-    }
+const secret: Secret = JWT_SECRET;
 
+export function generateToken(payload: JwtPayload): string {
+    return jwt.sign(payload, secret, { expiresIn: "1h" })
+}
+
+export function verifyToken(token: string): JwtPayload | null {
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        return decoded;
-    } catch {
-        throw new Error("Invalid token");
+        return jwt.verify(token, secret) as JwtPayload;
+    } catch (error) {
+        console.error("Token verification failed:", error);
+        return null;
     }
 }
