@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { verifyToken } from '../config/Auth';
+import { verifyToken } from '../config/auth';
 
 declare global {
     namespace Express {
