@@ -22,8 +22,11 @@ export class ItemController {
   async show(req: Request, res: Response) {
     try {
       const { id } = req.params;
+
       const item = await itemRepository.findByIdWithUser(Number(id));
-      if (!item) return res.status(404).json({ message: "Item não encontrado" });
+      if (!item) {
+        return res.status(404).json({ message: "Item não encontrado" });
+      }
 
       return res.json(item);
     } catch (error) {
@@ -49,16 +52,20 @@ export class ItemController {
       const userId = req.user.id;
 
       if (!name || !category || !tripId) {
-        return res
-          .status(400)
-          .json({ message: "Name, category and tripId are required" });
+        return res.status(400).json({
+          message: "Name, category and tripId are required",
+        });
       }
 
       const user = await userRepository.findById(Number(userId));
-      if (!user) return res.status(404).json({ message: "User not found" });
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
 
       const trip = await tripRepository.findById(Number(tripId));
-      if (!trip) return res.status(404).json({ message: "Trip not found" });
+      if (!trip) {
+        return res.status(404).json({ message: "Trip not found" });
+      }
 
       const item = await itemRepository.createAndSave({
         name,
@@ -78,10 +85,13 @@ export class ItemController {
     try {
       const { id } = req.params;
       const userId = req.user.id;
-      const { name, category, tripId } = req.body;
+      const { name, category, tripId, isPacked } = req.body;
 
-      const item = await itemRepository.findById(Number(id));
-      if (!item) return res.status(404).json({ message: "Item not found" });
+      // 🔥 CORREÇÃO AQUI
+      const item = await itemRepository.findByIdWithUser(Number(id));
+      if (!item) {
+        return res.status(404).json({ message: "Item not found" });
+      }
 
       if (req.user.role !== "admin" && item.user?.id !== userId) {
         return res.status(403).json({ message: "Access denied" });
@@ -89,15 +99,19 @@ export class ItemController {
 
       if (name) item.name = name;
       if (category) item.category = category;
+      if (typeof isPacked === "boolean") item.isPacked = isPacked;
 
       if (tripId) {
         const trip = await tripRepository.findById(Number(tripId));
-        if (!trip) return res.status(404).json({ message: "Trip not found" });
+        if (!trip) {
+          return res.status(404).json({ message: "Trip not found" });
+        }
         item.trip = trip;
       }
 
       const updatedItem = await itemRepository.save(item);
       return res.json(updatedItem);
+
     } catch (error) {
       console.error(error);
       return res.status(500).json({ message: "Internal server error" });
@@ -109,8 +123,11 @@ export class ItemController {
       const { id } = req.params;
       const userId = req.user.id;
 
-      const item = await itemRepository.findById(Number(id));
-      if (!item) return res.status(404).json({ message: "Item not found" });
+      // 🔥 CORREÇÃO AQUI TAMBÉM
+      const item = await itemRepository.findByIdWithUser(Number(id));
+      if (!item) {
+        return res.status(404).json({ message: "Item not found" });
+      }
 
       if (req.user.role !== "admin" && item.user?.id !== userId) {
         return res.status(403).json({ message: "Access denied" });
@@ -118,6 +135,7 @@ export class ItemController {
 
       await itemRepository.removePost(item);
       return res.status(204).send();
+
     } catch (error) {
       console.error(error);
       return res.status(500).json({ message: "Internal server error" });
