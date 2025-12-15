@@ -1,4 +1,4 @@
-import { AppDataSource } from '../config/data-source';
+import { AppDataSource } from '../config/Data-source';
 import { User } from '../models/User';
 import { Repository } from 'typeorm';
 
@@ -15,17 +15,17 @@ export class UserRepository {
     });
   }
 
-  async findAllWithPosts(): Promise<User[]> {
+  async findAllWithTrips(): Promise<User[]> {
     return this.repository.find({
-      relations: ['posts'],
+      relations: ['trips'],
       order: { id: 'ASC' }
     });
   }
 
-  async findByIdWithPosts(id: number): Promise<User | null> {
+  async findByIdWithTrips(id: number): Promise<User | null> {
     return this.repository.findOne({
       where: { id },
-      relations: ['posts']
+      relations: ['trips']
     });
   }
 
