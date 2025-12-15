@@ -1,4 +1,4 @@
-import { AppDataSource } from "../config/data-source";
+import { AppDataSource } from "../config/Data-source";
 import { Item } from "../models/Item";
 import { Trip } from "../models/Trip";
 import { User } from "../models/User";
@@ -11,10 +11,11 @@ export class ChecklistService {
     trip: Trip,
     user: User
   ): Promise<Item[]> {
-    if (!autoGenerate) return [];
-
     const itemRepo = AppDataSource.getRepository(Item);
-    const items: Item[] = [];
+
+    if (!autoGenerate && (!trip.type || trip.type === "outro")) {
+      return [];
+    }
 
     const fixedItems = [
       { name: "Documentos", category: "documentos" },
@@ -25,33 +26,35 @@ export class ChecklistService {
 
     let clothingItems: { name: string; category: string }[] = [];
 
-    if (temperature >= 23) {
-      clothingItems = [
-        { name: "Blusas", category: "roupas" },
-        { name: "Bermudas", category: "roupas" },
-        { name: "Calças", category: "roupas" },
-        { name: "Roupas íntimas", category: "roupas" },
-        { name: "Tênis", category: "calcados" },
-        { name: "Chinelos", category: "calcados" },
-      ];
-    } else if (temperature >= 13) {
-      clothingItems = [
-        { name: "Blusas", category: "roupas" },
-        { name: "Blusas de manga longa", category: "roupas" },
-        { name: "Bermudas", category: "roupas" },
-        { name: "Calças", category: "roupas" },
-        { name: "Roupas íntimas", category: "roupas" },
-        { name: "Tênis", category: "calcados" },
-        { name: "Chinelos", category: "calcados" },
-      ];
-    } else {
-      clothingItems = [
-        { name: "Camisetas de manga longa", category: "roupas" },
-        { name: "Calças", category: "roupas" },
-        { name: "Roupas íntimas", category: "roupas" },
-        { name: "Tênis", category: "calcados" },
-        { name: "Casaco", category: "roupas" },
-      ];
+    if (autoGenerate) {
+      if (temperature >= 23) {
+        clothingItems = [
+          { name: "Blusas", category: "roupas" },
+          { name: "Bermudas", category: "roupas" },
+          { name: "Calças", category: "roupas" },
+          { name: "Roupas íntimas", category: "roupas" },
+          { name: "Tênis", category: "calcados" },
+          { name: "Chinelos", category: "calcados" },
+        ];
+      } else if (temperature >= 13) {
+        clothingItems = [
+          { name: "Blusas", category: "roupas" },
+          { name: "Blusas de manga longa", category: "roupas" },
+          { name: "Bermudas", category: "roupas" },
+          { name: "Calças", category: "roupas" },
+          { name: "Roupas íntimas", category: "roupas" },
+          { name: "Tênis", category: "calcados" },
+          { name: "Chinelos", category: "calcados" },
+        ];
+      } else {
+        clothingItems = [
+          { name: "Camisetas de manga longa", category: "roupas" },
+          { name: "Calças", category: "roupas" },
+          { name: "Roupas íntimas", category: "roupas" },
+          { name: "Tênis", category: "calcados" },
+          { name: "Casaco", category: "roupas" },
+        ];
+      }
     }
 
     const typeBasedItems: Record<string, { name: string; category: string }[]> = {
@@ -82,17 +85,18 @@ export class ChecklistService {
     };
 
     const combinedItems = [
-      ...fixedItems,
+      ...(autoGenerate || (trip.type && trip.type !== "outro") ? fixedItems : []),
       ...clothingItems,
-      ...(typeBasedItems[trip.type] || []),
+      ...(trip.type && trip.type !== "outro" ? typeBasedItems[trip.type] || [] : []),
     ];
+
+    if (combinedItems.length === 0) return [];
 
     const createdItems = combinedItems.map((f) =>
       itemRepo.create({
         name: f.name,
         category: f.category,
         isPacked: false,
-        isFavorite: false,
         trip,
         user,
       } as DeepPartial<Item>)
