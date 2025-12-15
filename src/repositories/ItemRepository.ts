@@ -1,6 +1,6 @@
-import { AppDataSource } from '../config/data-source';
-import { Item } from '../models/Item';
-import { Repository } from 'typeorm';
+import { AppDataSource } from "../config/Data-source";
+import { Item } from "../models/Item";
+import { Repository } from "typeorm";
 
 export class ItemRepository {
   private repository: Repository<Item>;
@@ -11,15 +11,15 @@ export class ItemRepository {
 
   async findAllWithUser(): Promise<Item[]> {
     return this.repository.find({
-      relations: ['user'],
-      order: { id: 'ASC' }
+      relations: ["user"],
+      order: { id: "ASC" },
     });
   }
 
   async findByIdWithUser(id: number): Promise<Item | null> {
     return this.repository.findOne({
       where: { id },
-      relations: ['user']
+      relations: ["user", "trip"],
     });
   }
 
@@ -27,21 +27,21 @@ export class ItemRepository {
     return this.repository.findOneBy({ id });
   }
 
-  async findByTripId(tripId: number) {
-  return this.repository.find({
-    where: { trip: { id: tripId } },
-    relations: ["user", "trip"],
-    order: { name: "ASC" }
-  });
-}
+  async findByTripId(tripId: number): Promise<Item[]> {
+    return this.repository.find({
+      where: { trip: { id: tripId } },
+      relations: ["user", "trip"],
+      order: { name: "ASC" },
+    });
+  }
 
   async createAndSave(data: Partial<Item>): Promise<Item> {
     const item = this.repository.create(data);
     return this.repository.save(item);
   }
 
-  async save(trip: Item): Promise<Item> {
-    return this.repository.save(trip);
+  async save(item: Item): Promise<Item> {
+    return this.repository.save(item);
   }
 
   async removePost(item: Item): Promise<Item> {
