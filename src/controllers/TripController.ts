@@ -8,7 +8,6 @@ const tripRepository = new TripRepository();
 const userRepository = new UserRepository();
 
 export class TripController {
-  
   async list(req: Request, res: Response) {
     try {
       const trips = await tripRepository.findAllWithUser();
@@ -45,9 +44,7 @@ export class TripController {
 
   async create(req: Request, res: Response) {
     try {
-      const { name, city, country, startDate, endDate, automaticList } =
-        req.body;
-
+      const { name, city, country, startDate, endDate, automaticList, type } = req.body;
       const userId = req.user.id;
 
       if (!name || !city || !country || !startDate || !endDate) {
@@ -67,61 +64,62 @@ export class TripController {
         endDate,
         user,
         automaticList: !!automaticList,
+        type: type || "outro",
       });
 
-      if (automaticList === true) {
-        const avg = await getHistoricalAverageForInterval(
-          city,
-          country,
-          startDate,
-          endDate
-        );
-
-        const temperature = avg?.temp_avg ?? 20;
-
-        await ChecklistService.generateChecklist(
-          temperature,
-          true,
-          trip,
-          user
-        );
+      let temperature = 20; 
+      if (automaticList) {
+        const avg = await getHistoricalAverageForInterval(city, country, startDate, endDate);
+        temperature = avg?.temp_avg ?? 20;
       }
+
+      await ChecklistService.generateChecklist(
+        temperature,
+        !!automaticList,
+        trip,
+        user
+      );
 
       return res.status(201).json({
         message: "Trip created successfully",
         trip,
       });
+
     } catch (error) {
+      console.error("Erro interno:", error);
       return res.status(500).json({ message: "Internal server error" });
     }
   }
 
   async update(req: Request, res: Response) {
-    try {
-      const { id } = req.params;
-      const userId = req.user.id;
+  try {
+    const { id } = req.params;
+    const userId = req.user.id;
 
-      const { name, city, country, startDate, endDate, isFavorite } = req.body;
+    const { name, city, country, startDate, endDate, type } = req.body;
 
-      const trip = await tripRepository.findById(Number(id));
-      if (!trip) return res.status(404).json({ message: "Trip not found" });
+    const trip = await tripRepository.findById(Number(id));
+    if (!trip) return res.status(404).json({ message: "Trip not found" });
 
-      if (req.user.role !== "admin" && trip.user?.id !== userId) {
-        return res.status(403).json({ message: "Access denied" });
-      }
-
-      if (name !== undefined) trip.name = name;
-      if (city !== undefined) trip.city = city;
-      if (country !== undefined) trip.country = country;
-      if (startDate !== undefined) trip.startDate = startDate;
-      if (endDate !== undefined) trip.endDate = endDate;
-
-      const updatedTrip = await tripRepository.save(trip);
-      return res.json(updatedTrip);
-    } catch (error) {
-      return res.status(500).json({ message: "Internal server error" });
+    if (req.user.role !== "admin" && trip.user?.id !== userId) {
+      return res.status(403).json({ message: "Access denied" });
     }
+
+    if (name !== undefined) trip.name = name;
+    if (city !== undefined) trip.city = city;
+    if (country !== undefined) trip.country = country;
+    if (startDate !== undefined) trip.startDate = startDate;
+    if (endDate !== undefined) trip.endDate = endDate;
+
+    if (type !== undefined) trip.type = type;
+
+    const updatedTrip = await tripRepository.save(trip);
+    return res.json(updatedTrip);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal server error" });
   }
+}
 
   async delete(req: Request, res: Response) {
     try {
