@@ -1,6 +1,6 @@
-import { AppDataSource } from "../config/Data-source";
-import { Trip } from "../models/Trip";
-import { Repository } from "typeorm";
+import { AppDataSource } from '../config/data-source';
+import { Trip } from '../models/Trip';
+import { Repository } from 'typeorm';
 
 export class TripRepository {
   private repository: Repository<Trip>;
