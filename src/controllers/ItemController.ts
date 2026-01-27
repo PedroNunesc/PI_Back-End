@@ -87,7 +87,6 @@ export class ItemController {
       const userId = req.user.id;
       const { name, category, tripId, isPacked } = req.body;
 
-      // 🔥 CORREÇÃO AQUI
       const item = await itemRepository.findByIdWithUser(Number(id));
       if (!item) {
         return res.status(404).json({ message: "Item not found" });
@@ -123,7 +122,6 @@ export class ItemController {
       const { id } = req.params;
       const userId = req.user.id;
 
-      // 🔥 CORREÇÃO AQUI TAMBÉM
       const item = await itemRepository.findByIdWithUser(Number(id));
       if (!item) {
         return res.status(404).json({ message: "Item not found" });
