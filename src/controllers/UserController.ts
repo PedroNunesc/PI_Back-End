@@ -74,40 +74,25 @@ export class UserController {
   }
 
   async update(req: Request, res: Response): Promise<Response> {
-  try {
     const id = Number(req.params.id) || req.user.id;
-
-    if (req.user.role !== "admin" && id !== req.user.id) {
-      return res.status(403).json({ message: "Access denied" });
-    }
-
+  
     const user = await userRepository.findById(id);
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
+    if (!user) return res.status(404).json({ message: "User not found" });
+  
     const { name, email, password, profilePhotoUrl } = req.body;
-
+  
     if (name) user.name = name;
+    if (email) user.email = email;
     if (password) user.password = password;
-    if (profilePhotoUrl) user.profilePhotoUrl = profilePhotoUrl;
-
-    if (email) {
-      const emailExists = await userRepository.findByEmail(email);
-      if (emailExists && emailExists.id !== user.id) {
-        return res.status(409).json({ message: "Email already in use" });
-      }
-      user.email = email;
+  
+    if (profilePhotoUrl && profilePhotoUrl.startsWith("http")) {
+      user.profilePhotoUrl = profilePhotoUrl;
     }
-
+  
     const updatedUser = await userRepository.save(user);
     return res.json(updatedUser);
-
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: "Internal server error" });
   }
-}
+  
 
 
   async delete(req: Request, res: Response): Promise<Response> {
