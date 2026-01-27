@@ -1,6 +1,6 @@
-import { AppDataSource } from "../config/Data-source";
-import { Item } from "../models/Item";
-import { Repository } from "typeorm";
+import { AppDataSource } from '../config/data-source';
+import { Item } from '../models/Item';
+import { Repository } from 'typeorm';
 
 export class ItemRepository {
   private repository: Repository<Item>;
