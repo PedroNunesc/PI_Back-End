@@ -1,4 +1,4 @@
-import { AppDataSource } from "../config/Data-source";
+import { AppDataSource } from "../config/data-source";
 import { Item } from "../models/Item";
 import { Trip } from "../models/Trip";
 import { User } from "../models/User";
@@ -79,7 +79,7 @@ export class ChecklistService {
         { name: "Mochila", category: "acessorios" },
         { name: "Repelente", category: "extras" },
         { name: "Protetor Solar", category: "extras" },
-        { name: "Boné", category: "acessorios" },
+        { name: "Boné", category: "acessorios" },  
       ],
       outro: [],
     };
