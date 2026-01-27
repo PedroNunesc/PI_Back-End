@@ -19,7 +19,7 @@ export class User {
     password: string;
 
     @Column({ nullable: true })
-    profilePhotoUrl?: string;
+profilePhotoUrl?: string;
 
     @CreateDateColumn()
     createdAt!: Date;
