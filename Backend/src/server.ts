@@ -4,16 +4,22 @@ import authRoutes from "./routes/AuthRoutes";
 import userRoutes from "./routes/UserRoutes";
 import tripRoutes from "./routes/TripRoutes";
 import itemRoutes from "./routes/ItemRoutes";
-import * as dotenv from "dotenv";
 import cors from "cors";
 
-dotenv.config();
+if (process.env.NODE_ENV !== "production") {
+  import("dotenv").then(dotenv => dotenv.config());
+}
 
 const app: Application = express();
 
 app.use(
   cors({
-    origin: ["http://127.0.0.1:5500", "http://localhost:5500"],
+    origin: [
+      "http://127.0.0.1:5500",
+      "http://localhost:5500",
+      "https://seu-frontend.netlify.app",
+      "https://seu-frontend.vercel.app",
+    ],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
@@ -27,7 +33,7 @@ app.use("/api", userRoutes);
 app.use("/api", tripRoutes);
 app.use("/api", itemRoutes);
 
-const PORT = Number(process.env.PORT || "3000");
+const PORT = Number(process.env.PORT || 3000);
 
 AppDataSource.initialize()
   .then(() => {
