@@ -9,9 +9,9 @@ if (!DATABASE_URL) {
 
 export const AppDataSource = new DataSource({
   type: "postgres",
-  url: DATABASE_URL,         
+  url: DATABASE_URL,                  
   synchronize: false,
   logging: true,
   entities: [__dirname + "/../models/*.ts"],
-  ssl: { rejectUnauthorized: false }, 
+  ssl: { rejectUnauthorized: false },
 });
