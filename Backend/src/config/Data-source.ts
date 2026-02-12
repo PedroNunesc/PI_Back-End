@@ -11,8 +11,8 @@ if (!DATABASE_URL) {
 
 export const AppDataSource = new DataSource({
   type: "postgres",
-  url: DATABASE_URL,          
-  synchronize: false,         
+  url: DATABASE_URL,
+  synchronize: false,
   logging: true,
   entities: [__dirname + "/../models/*.ts"],
 
