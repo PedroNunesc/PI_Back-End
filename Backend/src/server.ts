@@ -17,8 +17,8 @@ app.use(
     origin: [
       "http://127.0.0.1:5500",
       "http://localhost:5500",
-      "https://seu-frontend.netlify.app",
-      "https://seu-frontend.vercel.app",
+      "https://SEU-FRONTEND.netlify.app", 
+      "https://SEU-FRONTEND.vercel.app"   
     ],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
