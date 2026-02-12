@@ -1,10 +1,15 @@
 import "reflect-metadata";
 import { DataSource } from "typeorm";
-import * as dotenv from "dotenv";
 
-dotenv.config();
+if (process.env.NODE_ENV !== "production") {
+  import("dotenv").then(dotenv => dotenv.config());
+}
 
 const { DB_HOST, DB_PORT, DB_USERNAME, DB_PASSWORD, DB_NAME } = process.env;
+
+if (!DB_HOST || !DB_PORT || !DB_USERNAME || !DB_PASSWORD || !DB_NAME) {
+  throw new Error("Erro: Variáveis de ambiente do banco não definidas!");
+}
 
 export const AppDataSource = new DataSource({
     type: "postgres",
@@ -12,7 +17,7 @@ export const AppDataSource = new DataSource({
     port: Number(DB_PORT),
     username: DB_USERNAME,
     password: DB_PASSWORD,
-    database: DB_NAME, 
+    database: DB_NAME,
     synchronize: false,
     logging: true,
     entities: [__dirname + "/../models/*.ts"],
