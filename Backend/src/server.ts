@@ -1,47 +1,26 @@
-import express, { Application } from "express";
-import { AppDataSource } from "./config/Data-source";
+import express from "express";
+import { AppDataSource } from "./config/AppDataSource"; 
 import authRoutes from "./routes/AuthRoutes";
 import userRoutes from "./routes/UserRoutes";
 import tripRoutes from "./routes/TripRoutes";
 import itemRoutes from "./routes/ItemRoutes";
-import cors from "cors";
 
-if (process.env.NODE_ENV !== "production") {
-  import("dotenv").then(dotenv => dotenv.config());
-}
-
-const app: Application = express();
-
-app.use(
-  cors({
-    origin: [
-      "http://127.0.0.1:5500",
-      "http://localhost:5500",
-      "https://SEU-FRONTEND.netlify.app", 
-      "https://SEU-FRONTEND.vercel.app"   
-    ],
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
+const app = express();
+const PORT = Number(process.env.PORT || 3000);
 
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
 app.use("/api", authRoutes);
 app.use("/api", userRoutes);
 app.use("/api", tripRoutes);
 app.use("/api", itemRoutes);
 
-const PORT = Number(process.env.PORT || 3000);
-
 AppDataSource.initialize()
   .then(() => {
-    console.log("Data Source has been initialized!");
+    console.log("Banco conectado com sucesso!");
     app.listen(PORT, () => {
-      console.log(`Server is running on port ${PORT}`);
+      console.log(`Server rodando na porta ${PORT}`);
     });
   })
   .catch((err) => {
-    console.error("Error during Data Source initialization:", err);
+    console.error("Erro ao conectar no banco:", err);
   });
