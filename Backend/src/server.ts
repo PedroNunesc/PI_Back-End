@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import { AppDataSource } from "./config/AppDataSource";
+import { AppDataSource } from "./config/Data-source.ts";
 import authRoutes from "./routes/AuthRoutes";
 import userRoutes from "./routes/UserRoutes";
 import tripRoutes from "./routes/TripRoutes";
@@ -33,3 +33,4 @@ AppDataSource.initialize()
   .catch((err) => {
     console.error("Erro ao conectar no banco:", err);
   });
+
