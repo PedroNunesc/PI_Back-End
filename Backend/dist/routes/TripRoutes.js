@@ -1,0 +1,22 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const TripController_1 = require("../controllers/TripController");
+const AuthMiddleware_1 = require("../middlewares/AuthMiddleware");
+const router = (0, express_1.Router)();
+const tripController = new TripController_1.TripController();
+const auth = new AuthMiddleware_1.AuthMiddleware();
+router.get("/trip", auth.authenticateToken, (req, res) => tripController.list(req, res));
+'S';
+router.get("/trip/:id", auth.authenticateToken, (req, res) => tripController.show(req, res));
+'S';
+router.post("/trip", auth.authenticateToken, (req, res) => tripController.create(req, res));
+'S';
+router.put("/trip/:id", auth.authenticateToken, (req, res) => tripController.update(req, res));
+'S';
+router.delete("/trip/:id", auth.authenticateToken, (req, res) => tripController.delete(req, res));
+'S';
+router.get("/trip/user/:userId", auth.authenticateToken, (req, res) => tripController.getByUser(req, res));
+'S';
+exports.default = router;
+//# sourceMappingURL=TripRoutes.js.map
